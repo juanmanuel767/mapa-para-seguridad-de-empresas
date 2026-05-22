@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+*.log
+*.bak
+*.tmp
+control-puestos-backup*.json
+*respaldo*cifrado*.json
+*.xlsx
+*.xls
+*.pdf

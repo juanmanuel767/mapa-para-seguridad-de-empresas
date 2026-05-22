@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Juan Manuel Peralta - Ingeniero de Sistemas - peraltachaconjuanmanuel5@gmail.com">
+    <meta name="theme-color" content="#0e1420">
+    <meta name="description" content="Plataforma segura para control de puestos en mapa.">
+    <title>Control de Puestos</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div id="authScreen" class="auth-screen">
+      <div class="auth-card">
+        <div id="authProfile" class="auth-profile">
+          <div class="auth-avatar">CP</div>
+          <div>
+            <h1 id="authTitle">Acceso seguro</h1>
+            <p id="authIntro">Protege la plataforma con una clave privada.</p>
+          </div>
+        </div>
+        <select id="authAccountSelect"></select>
+        <input id="authAccountName" type="text" autocomplete="name" placeholder="Nombre de la cuenta">
+        <input id="authAccountPhoto" type="file" accept="image/*">
+        <input id="authPassword" type="password" autocomplete="current-password" placeholder="Clave de acceso">
+        <input id="authPasswordConfirm" type="password" autocomplete="new-password" placeholder="Confirmar clave">
+        <button id="authSubmit" class="primary">Entrar</button>
+        <button id="authNewAccount" class="secondary full">Crear otra cuenta</button>
+        <input id="authBackupFile" type="file" accept=".json,application/json">
+        <button id="authImportBackup" class="secondary full">Importar respaldo</button>
+        <p id="authMessage" class="auth-message"></p>
+      </div>
+    </div>
+
+    <div class="app">
+      <aside class="sidebar">
+        <header class="brand">
+          <div class="brand-mark">CP</div>
+          <div>
+            <h1>Control de Puestos</h1>
+            <p id="profileNameLabel">Mapas, documentos y vulnerabilidad</p>
+          </div>
+          <img id="profileAvatar" class="profile-avatar hidden" alt="Perfil">
+          <button id="securityBtn" class="icon-btn lock-btn" title="Seguridad">S</button>
+          <button id="lockBtn" class="icon-btn lock-btn" title="Bloquear">L</button>
+        </header>
+
+        <div class="sidebar-scroll">
+          <section class="panel">
+            <label for="mapSelect">Mapa activo</label>
+            <div class="row">
+              <select id="mapSelect"></select>
+              <button id="newMapBtn" class="icon-btn" title="Crear mapa">+</button>
+              <button id="editMapBtn" class="icon-btn" title="Editar mapa">E</button>
+              <button id="deleteMapQuickBtn" class="icon-btn danger-icon" title="Eliminar mapa">X</button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-title">
+              <span>Ubicar coordenada</span>
+              <span id="coordinateStatus" class="muted">auto mapa</span>
+            </div>
+            <input id="coordinateInput" inputmode="decimal" placeholder="Ej: 2.896643, -75.278187">
+            <button id="locateCoordinateBtn" class="primary">Localizar coordenada</button>
+          </section>
+
+          <section class="panel">
+            <div class="panel-title">
+              <span>Cargar Excel</span>
+              <span id="importStatus" class="muted">sin archivo</span>
+            </div>
+            <input id="excelInput" type="file" accept=".xlsx,.xls,.csv">
+            <select id="sheetMode">
+              <option value="first">Solo primera hoja con coordenadas</option>
+              <option value="all">Todas las hojas con coordenadas</option>
+            </select>
+            <button id="importBtn" class="primary">Analizar e importar</button>
+            <button id="clearMapBtn" class="secondary full">Limpiar puestos del mapa</button>
+            <button id="exportExcelBtn" class="secondary full">Exportar Excel</button>
+          </section>
+
+          <section class="panel">
+            <div class="panel-title">
+              <span>Filtros</span>
+              <button id="clearFiltersBtn" class="text-btn">Limpiar</button>
+            </div>
+            <input id="searchInput" type="search" placeholder="Buscar puesto, sede, rector...">
+            <select id="zoneFilter">
+              <option value="">Todas las zonas</option>
+            </select>
+            <select id="communeFilter">
+              <option value="">Todas las comunas</option>
+            </select>
+            <select id="riskFilter">
+              <option value="">Todos los niveles</option>
+              <option value="normal">Normal</option>
+              <option value="bajo">Bajo</option>
+              <option value="medio">Medio</option>
+              <option value="alto">Alto</option>
+              <option value="critico">Critico</option>
+            </select>
+            <button id="fullListBtn" class="secondary full">Ver lista completa</button>
+          </section>
+
+          <section class="panel stats">
+            <div>
+              <strong id="totalPoints">0</strong>
+              <span>Puestos</span>
+            </div>
+            <div>
+              <strong id="redPoints">0</strong>
+              <span>Rojos</span>
+            </div>
+            <div>
+              <strong id="eventCount">0</strong>
+              <span>Eventos</span>
+            </div>
+          </section>
+
+          <section class="panel list-panel">
+            <div class="panel-title">
+              <span>Puestos</span>
+              <span id="visibleCount" class="muted">0 visibles</span>
+            </div>
+            <div id="pointList" class="point-list"></div>
+          </section>
+
+          <footer class="watermark-footer" style="padding: 15px; text-align: center; font-size: 0.8rem; color: #6b7280; border-top: 1px solid #e5e7eb; background-color: rgba(0,0,0,0.02);">
+            <div style="font-weight: 600; margin-bottom: 4px; color: #374151;">Desarrollado por Juan Manuel Peralta</div>
+            <div style="margin-bottom: 2px;">Ingeniero de Sistemas</div>
+            <div><a href="mailto:peraltachaconjuanmanuel5@gmail.com" style="color: inherit; text-decoration: none;">peraltachaconjuanmanuel5@gmail.com</a></div>
+          </footer>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <div id="map"></div>
+        <div class="map-tools">
+          <button id="addPointBtn" title="Agregar puesto manual">+</button>
+          <button id="fitBtn" title="Ver todos">□</button>
+          <button id="installAppBtn" class="hidden" title="Instalar app">↓</button>
+        </div>
+        <div class="legend">
+          <span><i class="dot normal"></i>Normal</span>
+          <span><i class="dot bajo"></i>Bajo</span>
+          <span><i class="dot medio"></i>Medio</span>
+          <span><i class="dot alto"></i>Alto</span>
+          <span><i class="dot critico"></i>Critico</span>
+        </div>
+      </main>
+
+      <aside id="detailDrawer" class="drawer" aria-hidden="true">
+        <div class="drawer-header">
+          <div>
+            <h2 id="detailTitle">Puesto</h2>
+            <p id="detailSubtitle"></p>
+          </div>
+          <button id="closeDrawerBtn" class="icon-btn" title="Cerrar">x</button>
+        </div>
+
+        <nav class="tabs" id="tabs"></nav>
+        <div id="tabContent" class="tab-content"></div>
+      </aside>
+    </div>
+
+    <div id="modal" class="modal hidden">
+      <div class="modal-card">
+        <h2 id="modalTitle">Crear mapa</h2>
+        <div id="modalBody"></div>
+        <div class="modal-actions">
+          <button id="modalCancel" class="secondary">Cancelar</button>
+          <button id="modalConfirm" class="primary">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
