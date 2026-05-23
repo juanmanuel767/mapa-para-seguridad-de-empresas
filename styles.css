@@ -935,6 +935,17 @@ textarea:focus {
   font-size: 14px;
 }
 
+.service-desc {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  font-size: 0.88rem;
+  color: var(--text);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
 .doc-item,
 .event-item {
   margin-top: 8px;

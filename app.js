@@ -570,11 +570,16 @@ function renderSummary(point) {
       ${infoCard("Zona", point.zone)}
       ${infoCard("Comuna", point.commune)}
       ${infoCard("Tipo", point.kind)}
+      ${infoCard("Servicio", point.service)}
+      ${infoCard("Responsable", point.manager)}
       ${infoCard("Eventos acumulados", String(point.events.length))}
       ${infoCard("Nivel", riskConfig[risk].label)}
       ${infoCard("Documentos", String(docs))}
       ${infoCard("Coordenadas", `${point.lat.toFixed(6)}, ${point.lng.toFixed(6)}`)}
     </div>
+    ${point.descripcion ? `
+    <h3 class="section-title">Descripcion del servicio</h3>
+    <div class="service-desc">${escapeHtml(point.descripcion)}</div>` : ""}
     <h3 class="section-title">Compartir ubicacion</h3>
     <div class="share-actions">
       <button id="shareWhatsAppBtn" class="secondary" type="button">WhatsApp</button>
@@ -591,6 +596,10 @@ function renderSummary(point) {
       <input id="editZone" value="${escapeAttr(point.zone)}" placeholder="Zona">
       <input id="editCommune" value="${escapeAttr(point.commune)}" placeholder="Comuna">
     </div>
+    <input id="editService" value="${escapeAttr(point.service)}" placeholder="Tipo de servicio (ej: Educacion, Salud...)">
+    <input id="editManager" value="${escapeAttr(point.manager)}" placeholder="Rector / responsable">
+    <label style="font-size:0.82rem;color:var(--muted);margin-top:4px;">Descripcion del servicio prestado</label>
+    <textarea id="editDescripcion" placeholder="Describe los servicios que se prestan en este puesto...">${escapeHtml(point.descripcion || "")}</textarea>
     <button id="savePointBtn" class="primary">Guardar cambios</button>
     <button id="deletePointBtn" class="danger-btn">Eliminar solo este puesto</button>
   `;
@@ -690,6 +699,9 @@ function bindDrawerForms(point) {
       point.address = document.querySelector("#editAddress").value.trim();
       point.zone = document.querySelector("#editZone").value.trim();
       point.commune = document.querySelector("#editCommune").value.trim();
+      point.service = document.querySelector("#editService")?.value.trim() || point.service;
+      point.manager = document.querySelector("#editManager")?.value.trim() || point.manager;
+      point.descripcion = document.querySelector("#editDescripcion")?.value.trim() || "";
       touchActiveMap();
       saveState();
       render();
