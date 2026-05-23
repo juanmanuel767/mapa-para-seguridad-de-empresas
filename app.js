@@ -383,11 +383,21 @@ function renderPoints() {
         <div class="marker-wrap ${risk}">
           ${alarm}
           <div class="marker-pulse" style="--risk-color:${riskConfig[risk].color}"></div>
-          <div class="marker-pin" style="background:${riskConfig[risk].color}">${point.events.length}</div>
+          <div class="marker-house" style="--pin-color:${riskConfig[risk].color}">
+            <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="22" cy="22" r="21" fill="var(--pin-color)"/>
+              <circle cx="22" cy="22" r="21" stroke="white" stroke-width="2"/>
+              <rect x="28" y="11" width="5" height="10" fill="white"/>
+              <polygon points="22,8 38,24 6,24" fill="white"/>
+              <rect x="9" y="23" width="26" height="15" fill="white"/>
+              <rect x="18" y="30" width="8" height="8" fill="var(--pin-color)"/>
+            </svg>
+            <span>${point.events.length}</span>
+          </div>
         </div>
       `,
-      iconSize: [42, 42],
-      iconAnchor: [21, 21],
+      iconSize: [44, 44],
+      iconAnchor: [22, 22],
     });
     const marker = L.marker([point.lat, point.lng], { icon })
       .addTo(leafletMap)
